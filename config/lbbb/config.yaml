@@ -1,0 +1,23 @@
+project: lbbb
+approach: regular
+
+data:
+  num_shots: 0 # 3, 5, 10
+  datafile_path: ./data/${project}
+  label_replacements:
+    "0": "This image corresponds to Normal"
+    "1": "This image corresponds to LBBB"
+  label_predictions:
+    "Normal": 0
+    "LBBB": 1
+  save_path: ./results/${project}/${approach}/${data.num_shots}
+
+model:
+  model_name: gpt-4o # gpt-4o, med-gemma-4b-it, PULSE
+
+user_args:
+  system_prompt_path: ./prompts/${project}/${approach}_system_prompt.txt
+  user_query_path: ./prompts/${project}/${approach}_user_prompt.txt
+  verbose: True
+  debug: False
+  batched: False

@@ -1,0 +1,7 @@
+outputs/*
+env/*
+fixes/*
+data/*
+results/*
+__pycache__/*
+.DS_Store

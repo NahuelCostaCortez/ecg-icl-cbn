@@ -1,0 +1,27 @@
+Your task is to classify the following ECG image. Available answers are:
+
+- Normal
+- LBBB
+
+Follow the steps below:
+
+1. To help you find the correct answer, we additionally provide you with example images with their respective labels.
+
+Study the example images carefully, noting the characteristic morphology and timing of each wave type. Pay particular attention to:
+1. The shape and duration of each wave
+2. The relative position of each wave in the beat
+3. The distinguishing features that help identify each wave/complex
+
+Here are the example images:
+-----------
+
+2. Take your time and think carefully about patterns that distinguish the Normal and LBBB beats.
+	- "Normal": showing typical characteristics including normal QRS duration, isoelectric ST segment, and positive T wave
+	- "LBBB": showing features such as prolonged QRS duration, ST segment elevation, and secondary ST-T changes
+
+3. Have a detailed look at the image that is provided below. Take a deep breath and think about what you see in the image. It is significant that you have a focus on every detail. Compare what you see in the patient image to the features you learned about.
+
+4. Generate an output regarding your final thoughts.
+
+Here is the patient image:
+
