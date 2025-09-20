@@ -3,6 +3,7 @@ import openai
 from openai import OpenAI
 import os
 import json
+import pandas as pd
 
 IMG_QUALITY = "high"
 MAX_TOKENS = 16384
@@ -39,11 +40,20 @@ def initialize_client(model_name):
 # -------------------------------------------------
 
 # ---------------- Process messages ---------------
+def convert_to_description(instruct, image):
+	"""Convert instruction to description."""
+	patient_id = image.split("/")[-1].split(".")[0]
+	# load csv with metadata
+	metadata = pd.read_csv("data/brugada/metadata.csv", dtype={"patient_id": str})
+	patient_description = metadata[metadata["patient_id"] == patient_id]["concepts"].values[0]
+	return instruct + ". " + patient_description
+
 def few_shot(
 	messages: dict,
 	img_quality: str,
 	few_shot_samples: dict,
-	interleave: bool = True
+	interleave: bool = True,
+	approach: str = "regular"
 ):
 	"""Generate few-shot examples messages."""
 	if not interleave:
@@ -85,6 +95,8 @@ def few_shot(
 				
 				# Create a message with one instruction and one image
 				image = organized_samples[instruct][i]
+				instruct = instruct if approach == "regular" else convert_to_description(instruct, image)
+				image = encode_image(image)
 				example = {
 					"role": "user",
 					"content": [
@@ -135,7 +147,7 @@ def _gen_user_message(user_query: str, image: str, img_quality: str):
         ],
     }
 
-def process_messages(system_prompt, user_query, query_img, few_shot_samples=None):
+def process_messages(system_prompt, user_query, query_img, few_shot_samples=None, approach="regular"):
 	"""Create messages that will be sent to the model."""
 	# System prompt
 	messages = [_gen_system_message(system_prompt)]
@@ -160,6 +172,7 @@ def process_messages(system_prompt, user_query, query_img, few_shot_samples=None
 			messages=messages,
 			img_quality=IMG_QUALITY,
 			few_shot_samples=few_shot_samples,
+			approach=approach
 		)
 		message_for_sample = messages.copy()
 			
@@ -192,6 +205,42 @@ def get_model_prediction(client, model_name, message_for_sample):
 					"score": {"type": "number"}
 				},
 					"required": ["thoughts", "answer", "score"]
+				}
+			}
+		}
+
+	"""Get prediction from the model."""
+	
+	response = client.chat.completions.create(
+		model=model_name,
+		messages=message_for_sample,
+		#max_tokens=MAX_TOKENS,
+		seed=42,
+		temperature=1,
+		response_format=character_schema
+	)
+	
+	return json.loads(response.choices[0].message.content)
+
+def get_model_prediction_cbm(client, model_name, message_for_sample):
+
+	if "gpt" in model_name:
+		character_schema = {"type": "json_object"}
+	else:
+		character_schema = {
+			"type": "json_schema",
+			"json_schema": {
+				"name": "character",
+				"schema": {
+					"type": "object",
+					"properties": {
+						"thoughts": {"type": "string"},
+						"ST segment elevation": {"type": "string"},
+						"T-wave inversion": {"type": "string"},
+						"Right bundle branch block": {"type": "string"},
+						"answer": {"type": "string"}
+					},
+					"required": ["thoughts", "ST segment elevation", "T-wave inversion", "Right bundle branch block", "answer"]
 				}
 			}
 		}

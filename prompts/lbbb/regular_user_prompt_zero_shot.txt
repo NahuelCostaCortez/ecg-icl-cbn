@@ -3,14 +3,68 @@ Your task is to classify the following ECG image. Available answers are:
 - Normal
 - LBBB
 
-Follow the steps below:
+Please follow these steps carefully:
 
-1. Take your time and think carefully about patterns that distinguish the Normal and LBBB beats.
-	- "Normal": showing typical characteristics including normal QRS duration, isoelectric ST segment, and positive T wave
-	- "LBBB": showing features such as prolonged QRS duration, ST segment elevation, and secondary ST-T changes
+---
 
-2. Have a detailed look at the image that is provided below. Take a deep breath and think about what you see in the image. It is significant that you have a focus on every detail. Compare what you see in the patient image to the features you learned about.
+**Step 1: Recall the diagnostic criteria**
 
-3. Generate an output regarding your final thoughts.
+- **Normal ECG:**
+  - QRS duration between 80–100 ms (about 2–2.5 small squares)
+  - Flat or slightly elevated ST segment
+  - Positive, low-amplitude, smooth T waves
+
+- **LBBB (Left Bundle Branch Block):**
+  - QRS duration >120 ms (more than 3 small squares)
+  - Notched or slurred S wave
+  - Loss of initial R wave
+  - ST segment elevation or discordant T wave
+
+🛑 **Important clinical reminder**:
+Missing an LBBB can be riskier than overdiagnosing it. If the QRS appears prolonged or there are signs like ST elevation or S wave notching, you are encouraged to favor LBBB — even if not all features are fully present.
+
+---
+
+**Step 2: Contrast Normal vs LBBB – before making a decision**
+
+Before analyzing the image, take a moment to mentally compare:
+
+- A **Normal** beat has a short QRS (<120 ms), isoelectric or slightly elevated ST segment, and smooth T wave.
+- An **LBBB** beat has a prolonged QRS (>120 ms), notched/slurred S wave, and ST elevation or inversion.
+
+Ask yourself:
+
+- Is the QRS **clearly narrow** or **borderline/prolonged**?
+- Are the ST and T waves **normal and smooth**, or **elevated/slurred**?
+- Is there any **notching** or **loss of the R wave**?
+
+✅ If there is ambiguity, and the QRS is borderline or ST segment is elevated, favor LBBB for diagnostic safety.
+
+---
+
+**Step 3: Analyze the patient ECG image**
+
+Now, look carefully at the ECG image provided below. Take a deep breath and pay attention to:
+
+- QRS duration
+- ST segment shape and elevation
+- Any S wave notching or R wave loss
+- General waveform morphology and rhythm
+
+Compare what you observe to the diagnostic criteria and the contrastive reasoning above.
+
+---
+
+**Step 4: Provide your classification**
+
+Generate your final output in the following JSON format:
+
+{
+    "thoughts": explain your reasoning in a clinical and structured way,
+    "answer": "Normal" | "LBBB",
+    "score": floating point between 0 and 1
+}
+
+⚠️ Do not include any extra explanation or markdown formatting. Only return the JSON object as your final response.
 
 Here is the patient image:

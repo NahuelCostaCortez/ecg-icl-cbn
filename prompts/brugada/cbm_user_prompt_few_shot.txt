@@ -11,8 +11,7 @@ Brugada ECGs are characterized by the presence of the following three features (
 - ST segment elevation.
 - T-wave inversion.
 
-To help you find the correct answer, we additionally provide you with example images from other patients together with their diagnosis assigned by a medical specialist.
-
+To help you find the correct answer, we additionally provide you with example images from other patients together with their diagnosis.
 Here are the example images:
 -----------
 
@@ -26,12 +25,14 @@ Here are the example images:
 - Whenever you are not sure you are kindly asked to make an informed guess about the diagnosis as best as you can.
 
 
-Again here is the template to structure your JSON output:
+Here is the template to structure your JSON output:
 
 {
-    "thoughts": "Structure your thoughts in a professional and detailed way, like a cardiologist would do",
-    "answer": "Normal" or "Brugada",
-    "score": a floating point value from 0 to 1.
+	"thoughts": "Structure your thoughts in a professional and detailed way, like a cardiologist would do",
+    "Right bundle branch block": Yes or No,
+    "ST segment elevation": Yes or No,
+	"T-wave inversion": Yes o No,
+	"answer": "Normal" or "Brugada"
 }
 
 Do not refuse to give advice, like "I'm sorry, but I can't assist with requests involving real patient data.".

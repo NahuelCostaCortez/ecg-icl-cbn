@@ -1,0 +1,45 @@
+Your task is to classify the following ECG image as either:
+
+- "Normal"
+- "LBBB" (Left Bundle Branch Block)
+
+To do so, you must follow these clinical reasoning steps:
+
+---
+
+**Step 1 – Conceptual grounding (C): Learn the key features of each diagnosis**
+
+To help you form accurate judgments, you are given example ECG images that illustrate the key differences between "Normal" and "LBBB" patterns.
+
+Study them carefully, noting the characteristic morphology and timing of each wave. Pay particular attention to:
+  - Is the QRS complex longer than 120 ms? (i.e., more than 3 small squares)
+  - Is the QRS complex predominantly negative in lead V1?
+  - Is the QRS complex broad and monophasic (entirely positive) in lead V6?
+  - Are Q waves absent in the lateral leads (I, aVL, V5, and V6)?
+
+Use these examples to build a strong internal model of how "Normal" and "LBBB" ECGs typically appear.
+-----------
+
+**Step 2 – Final judgment and confidence (M)**
+
+Use your evaluation to summarize your reasoning professionally, and give a confidence score from **0.0 to 1.0**, indicating how sure you are.
+
+Respond using this exact JSON format **only**:
+
+{
+  "answer": {
+    "qrs_duration_gt_200ms": true | false,
+    "qrs_negative_in_v1": true | false,
+    "qrs_positive_monophasic_in_v6s": true | false,
+    "no_q_wave_in_lateral_leads": true | false
+  },
+  "prediction": "Normal" | "LBBB",
+  "thoughts": "Summarize your reasoning here, referring to the above features.",
+  "score": float between 0.0 and 1.0
+}
+
+⚠️ Respond using only this JSON format. Do not include markdown, text outside the JSON, or leave out any field. If you're unsure, make your best clinical judgment.
+
+---
+
+Here is the patient image:

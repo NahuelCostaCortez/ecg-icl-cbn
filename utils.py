@@ -58,26 +58,41 @@ def display_message_with_image(message_json):
             plt.axis('off')
             plt.show()
             
-def is_valid_response(response, label_predictions):
+def is_valid_response(response, label_predictions, approach):
 	"""Check if the model response has the expected format and valid content."""
-	return (
-		response is not None
-		and isinstance(response, dict)
-		and all(key in response for key in ['thoughts', 'answer', 'score'])
-		and response['answer'] in label_predictions
-	)
+	if approach == "cbm":
+		return (
+			response is not None
+			and isinstance(response, dict)
+			and all(key in response for key in ['thoughts', 'Right bundle branch block', 'ST segment elevation', 'T-wave inversion', 'answer'])
+			and response['answer'] in label_predictions
+		)
+	else:
+		return (
+			response is not None
+			and isinstance(response, dict)
+			and all(key in response for key in ['thoughts', 'answer', 'score'])
+			and response['answer'] in label_predictions
+		)
 
-def update_patient_results(metadata, patient, response, label_predictions):
+def update_patient_results(metadata, patient, response, label_predictions, approach):
 	"""Update metadata with model results, handling both valid and invalid responses."""
 	patient_id = patient['patient_id']
 	mask = metadata['patient_id'] == patient_id
 	
-	if is_valid_response(response, label_predictions):
-		# Valid response - update with actual values
-		metadata.loc[mask, 'thoughts'] = response['thoughts']
-		metadata.loc[mask, 'answer'] = response['answer']
-		metadata.loc[mask, 'correct'] = patient['diagnosis'] == label_predictions[response['answer']]
-		metadata.loc[mask, 'score'] = response['score']
+	if is_valid_response(response, label_predictions, approach):
+		if approach == "cbm":
+			metadata.loc[mask, 'thoughts'] = response['thoughts']
+			metadata.loc[mask, 'Right bundle branch block'] = response['Right bundle branch block']
+			metadata.loc[mask, 'ST segment elevation'] = response['ST segment elevation']
+			metadata.loc[mask, 'T-wave inversion'] = response['T-wave inversion']
+			metadata.loc[mask, 'answer'] = response['answer']
+			metadata.loc[mask, 'correct'] = patient['diagnosis'] == label_predictions[response['answer']]
+		else:
+			metadata.loc[mask, 'thoughts'] = response['thoughts']
+			metadata.loc[mask, 'answer'] = response['answer']
+			metadata.loc[mask, 'correct'] = patient['diagnosis'] == label_predictions[response['answer']]
+			metadata.loc[mask, 'score'] = response['score']
 	else:
 		# Invalid/missing response - fill with None values
 		metadata.loc[mask, ['thoughts', 'answer', 'correct', 'score']] = None

@@ -1,0 +1,39 @@
+Your task is to evaluate relevant clinical features of the following ECG image. To do so, you must follow these clinical reasoning steps before making a decision:
+
+---
+
+Step 1: Evaluate the following four clinically relevant features **based on the ECG image**:
+
+  - Is the QRS complex longer than 120 ms? (i.e., more than 3 small squares)
+  - Is the QRS complex predominantly negative in lead V1?
+  - Is the QRS complex broad and monophasic (entirely positive) in lead V6?
+  - Are Q waves absent in the lateral leads (I, aVL, V5, and V6)?
+
+Mark each of them as either **true** or **false** based on what you see in the image.
+
+---
+
+Step 2: Summarize your reasoning clearly and professionally, as a medical assistant specialized in ECGs would do.  
+Step 3: Provide a confidence score from 0.0 (not sure) to 1.0 (completely sure).
+
+---
+
+📝 Please respond using the following JSON format **only**:
+
+{
+  "answer": {
+    "qrs_duration_gt_200ms": true | false,
+    "qrs_negative_in_v1": true | false,
+    "qrs_positive_monophasic_in_v6s": true | false,
+    "no_q_wave_in_lateral_leads": true | false
+  },
+  "prediction": "Normal" | "LBBB",
+  "thoughts": "Your reasoning here...",
+  "score": float between 0.0 and 1.0
+}
+
+---
+
+Take your time, carefully analyze the ECG image below, and follow the steps exactly before producing your response.
+
+Here is the patient image:

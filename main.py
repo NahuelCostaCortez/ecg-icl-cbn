@@ -11,12 +11,13 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # DEBUG
-DEBUG = True
+DEBUG = False
 
 @hydra.main(config_path="./config/lbbb", config_name="config", version_base=None)
 def main(cfg):
     # ----------- Experiment conditions -----------
 	# Data settings
+	approach = cfg.approach
 	shots = cfg.data.num_shots
 	setting = "zero_shot" if shots == 0 else "few_shot"
 	datafile_path = cfg.data.datafile_path
@@ -45,8 +46,8 @@ def main(cfg):
 	if setting != "zero_shot":
 		# Select samples for few-shot learning
 		few_shot_samples_metadata = data.select_samples(metadata, shots)
-		few_shot_mappings = data.get_few_shot_mappings(few_shot_samples_metadata, label_replacements)
-		few_shot_samples = llm.encode_few_shot_samples(few_shot_mappings)
+		few_shot_samples = data.get_few_shot_mappings(few_shot_samples_metadata, label_replacements)
+		#few_shot_samples = llm.encode_few_shot_samples(few_shot_mappings)
 
 	# remove ICL samples from metadata, just keep the test samples
 	metadata = metadata[~metadata['path'].str.contains('icl')]
@@ -62,20 +63,24 @@ def main(cfg):
 		
 		# Prepare input for model
 		query_img = llm.encode_image(patient['path'])
-		message_for_sample = llm.process_messages(system_prompt, user_query, query_img, few_shot_samples)
+		message_for_sample = llm.process_messages(system_prompt, user_query, query_img, few_shot_samples, approach)
 
 		if DEBUG:
 			utils.format_message(message_for_sample, setting)
 
 		# Get model prediction
 		try:
-			response = llm.get_model_prediction(client, model_name, message_for_sample)
+			if approach == "cbm":
+				response = llm.get_model_prediction_cbm(client, model_name, message_for_sample)
+				print(response)
+			else:
+				response = llm.get_model_prediction(client, model_name, message_for_sample)
 		except Exception as e:
 			logger.error(f"Unexpected error for patient {patient_id}: {e}")
 			response = None
 
 		# Process and store results
-		utils.update_patient_results(metadata, patient, response, label_predictions)
+		utils.update_patient_results(metadata, patient, response, label_predictions, approach)
 		
 		if DEBUG:
 			break
@@ -83,6 +88,7 @@ def main(cfg):
 
 	# Report results
 	metrics = utils.calculate_binary_classification_metrics(metadata, label_predictions)
+	print(metrics)
 	utils.print_classification_results(metrics)
 	
 	# Save results

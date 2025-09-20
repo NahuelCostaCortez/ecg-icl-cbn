@@ -28,8 +28,8 @@ def get_few_shot_mappings(few_shot_samples_metadata, label_replacements):
 		'Normal': ['path4', 'path5', 'path6']
 	}
 	"""
-
 	# dictionary with the description as key and the path as value
+
 	few_shot_mappings = {
 		label_replacements[str(diagnosis)]: few_shot_samples_metadata[few_shot_samples_metadata['diagnosis'] == diagnosis]['path'].tolist()
 		for diagnosis in few_shot_samples_metadata['diagnosis'].unique()

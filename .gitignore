@@ -5,3 +5,5 @@ data/*
 results/*
 __pycache__/*
 .DS_Store
+results.txt
+.vscode/*
